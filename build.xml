@@ -1,18 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="Trumpet"
-         default="compile"
+         default="all"
          basedir=".">
+
+  <!-- application properties -->
+  <property name="app.name"
+            value="trumpet"/>
+  <property name="app.version"
+            value="0.0.0.1"/>
 
   <!-- directories -->
 
   <property name="src"
             value="${basedir}/src"/>
+  <property name="build"
+            value="${basedir}/build"/>
+  <property name="dist"
+            value="${basedir}/dist"/>
 
   <!-- dependencies; include system specific definitions in build.properties -->
-  <!--
+  
+  <!-- This should be set to the path to scala home
   <property name="scala.dir"
             value=""/>
-  <property name="catalina.dir"
+  -->
+  
+  <!-- This should be set to the path to your servlet-api.jar
+  <property name="servlet-api.jar"
             value=""/>
   -->
 
@@ -53,36 +67,43 @@
 
   <!-- path to the various classes needed for compilation -->
   <path id="compile.classpath">
-    <fileset dir="${catalina.dir}/bin">
-      <include name="*.jar"/>
-    </fileset>
-    <pathelement location="${catalina.dir}/lib"/>
-    <fileset dir="${catalina.dir}/lib">
-      <include name="*.jar"/>
-    </fileset>
+    <fileset file="${servlet-api.jar}"/>
   </path>
 
   <!-- targets -->
 
+  <!-- import scala tasks -->
+  <taskdef resource="scala/tools/ant/antlib.xml"
+           classpathref="scala.classpath">
+  </taskdef>
+
   <target name="all"
-          depends="clean,compile"
-          description="Clean build and dist directories, then compile"/>
+          depends="clean,compile,dist"
+          description="Make everything from scratch"/>
 
   <target name="clean"
-          description="Delete all build artifacts">
-    <delete>
-      <fileset dir="${src}">
-        <include name="*.class"/>
-      </fileset>
-    </delete>
+          description="Clean up all build artifacts">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
   </target>
 
-  <!-- main compilation task -->
-  <target name="compile"
+  <target name="prepare_build"
           depends=""
+          description="Prepare filesystem for building">
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="prepare_dist"
+          depends=""
+          description="Prepare filesystem for creation distro">
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="compile"
+          depends="prepare_build"
           description="Compile sources">
     <scalac srcdir="${src}"
-            destdir="${src}"
+            destdir="${build}"
             deprecation="${compiler.deprecation}"
             addparams="${compiler.addparams}"
             force="${compiler.force}"
@@ -94,9 +115,11 @@
     </scalac>
   </target>
 
-  <!-- import scala tasks -->
-  <taskdef resource="scala/tools/ant/antlib.xml"
-           classpathref="scala.classpath">
-  </taskdef>
+  <target name="dist"
+          depends="prepare_dist"
+          description="Create a distribution package">
+    <jar jarfile="${dist}/${app.name}-${app.version}.jar"
+         basedir="${build}"/>
+  </target>
 
 </project>
