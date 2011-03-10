@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Trumpet"
+         default="compile"
+         basedir=".">
+
+  <!-- directories -->
+
+  <property name="src"
+            value="${basedir}/src"/>
+  <property name="scala.dir"
+            value="c:/scala"/>
+  <property name="catalina.dir"
+            value="c:/tomcat"/>
+
+  <!-- external jar files -->
+  <property name="scala-compiler.jar"
+            value="${scala.dir}/lib/scala-compiler.jar"/>
+  <property name="scala-library.jar"
+            value="${scala.dir}/lib/scala-library.jar"/>
+
+  <!-- compiler options -->
+
+  <!-- compile with deprecation information (on,off,yes,no) -->
+  <property name="compiler.deprecation"
+            value="yes"/>
+  <!-- extra parameters to pass to compiler that are not supported by ant e.g. -optimise -->
+  <property name="compiler.addparams"
+            value="-g:none"/>
+  <!-- whether or not to force the compiler to compiler unmodified files -->
+  <property name="compiler.force"
+            value="false"/>
+  <!-- whether or not to show the names of files being compiled -->
+  <property name="compiler.showfilenames"
+            value="true"/>
+  <!-- compiler output (none,verbose,debug) -->
+  <property name="compiler.output"
+            value="none"/>
+
+  <!-- classpaths -->
+
+  <!-- path for the core scala jars -->
+  <path id="scala.classpath">
+    <pathelement location="${scala-compiler.jar}"/>
+    <pathelement location="${scala-library.jar}"/>
+  </path>
+
+  <!-- path to the various classes needed for compilation -->
+  <path id="compile.classpath">
+    <fileset dir="${catalina.dir}/bin">
+      <include name="*.jar"/>
+    </fileset>
+    <pathelement location="${catalina.dir}/lib"/>
+    <fileset dir="${catalina.dir}/lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <!-- targets -->
+
+  <target name="all"
+          depends="clean,compile"
+          description="Clean build and dist directories, then compile"/>
+
+  <target name="clean"
+          description="Delete all build artifacts">
+    <delete>
+      <fileset dir="${src}">
+        <include name="*.class"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!-- main compilation task -->
+  <target name="compile"
+          depends=""
+          description="Compile sources">
+    <scalac srcdir="${src}"
+            destdir="${src}"
+            deprecation="${compiler.deprecation}"
+            addparams="${compiler.addparams}"
+            force="${compiler.force}"
+            failonerror="true"
+            scalacdebugging="${compiler.showfilenames}"
+            logging="${compiler.output}">
+      <classpath refid="compile.classpath"/>
+      <classpath refid="scala.classpath"/>
+    </scalac>
+  </target>
+
+  <!-- import scala tasks -->
+  <taskdef resource="scala/tools/ant/antlib.xml"
+           classpathref="scala.classpath">
+  </taskdef>
+
+</project>
