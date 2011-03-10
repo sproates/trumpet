@@ -7,10 +7,17 @@
 
   <property name="src"
             value="${basedir}/src"/>
+
+  <!-- dependencies; include system specific definitions in build.properties -->
+  <!--
   <property name="scala.dir"
-            value="c:/scala"/>
+            value=""/>
   <property name="catalina.dir"
-            value="c:/tomcat"/>
+            value=""/>
+  -->
+
+  <!-- include system specific definitions -->
+  <property file="${basedir}/build.properties"/>
 
   <!-- external jar files -->
   <property name="scala-compiler.jar"
