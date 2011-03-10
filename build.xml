@@ -68,6 +68,12 @@
   <!-- path to the various classes needed for compilation -->
   <path id="compile.classpath">
     <fileset file="${servlet-api.jar}"/>
+    <fileset file="${jetty-server.jar}"/>
+    <fileset file="${jetty-servlet.jar}"/>
+    <fileset file="${jetty-util.jar}"/>
+    <fileset file="${jetty-security.jar}"/>
+    <fileset file="${jetty-http.jar}"/>
+    <fileset file="${jetty-io.jar}"/>
   </path>
 
   <!-- targets -->
@@ -119,7 +125,12 @@
           depends="prepare_dist"
           description="Create a distribution package">
     <jar jarfile="${dist}/${app.name}-${app.version}.jar"
-         basedir="${build}"/>
+         basedir="${build}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="Trumpet"/>
+      </manifest>
+    </jar>
   </target>
 
 </project>

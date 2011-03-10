@@ -1,15 +1,17 @@
-import java.io.PrintWriter
-import javax.servlet.http.{
-  HttpServlet, HttpServletRequest => Request,
-  HttpServletResponse => Response
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.servlet.{
+  ServletContextHandler,
+  ServletHolder
 }
 
-class Trumpet extends HttpServlet {
-
-  override def doGet(request : Request, response : Response) = {
-    response.setContentType("text/xml")
-    response.getWriter().println(placeholder)
+object Trumpet extends {
+  def main(args:Array[String]) = {
+    var server = new Server(8080)
+    var context = new ServletContextHandler(ServletContextHandler.SESSIONS)
+    context.setContextPath("/")
+    server.setHandler(context)
+    context.addServlet(new ServletHolder(new TrumpetServlet()), "/*")
+    server.start()
+    server.join()
   }
-
-  val placeholder = <response>Ok</response>
 }
