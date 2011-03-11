@@ -1,1 +1,2 @@
-scala.dir=jetty.dir=
+scala.dir=
+jetty.dir=
