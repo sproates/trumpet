@@ -1,10 +1,13 @@
+Installation
+============
+
 Dependencies
 ------------
 
-Java 1.6
-Scala 2.8.1
-Jetty 7.3.1
-Ant 1.8.2
+* Java 1.6
+* Scala 2.8.1
+* Jetty 7.3.1
+* Ant 1.8.2
 
 Building
 --------
@@ -24,4 +27,4 @@ Running
 
 In this directory, run:
 
-  ant run
+    ant run

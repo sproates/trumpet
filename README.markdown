@@ -1,4 +1,4 @@
 Trumpet
--------
+=======
 
-A key value store over HTTP.
+A simple key/value datastore over HTTP.
