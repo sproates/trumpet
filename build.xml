@@ -3,12 +3,6 @@
          default="all"
          basedir=".">
 
-  <!-- application properties -->
-  <property name="app.name"
-            value="trumpet"/>
-  <property name="app.version"
-            value="0.0.0.1"/>
-
   <!-- directories -->
 
   <property name="src"
@@ -18,15 +12,23 @@
   <property name="dist"
             value="${basedir}/dist"/>
 
+  <!-- application properties -->
+  <property name="app.name"
+            value="trumpet"/>
+  <property name="app.version"
+            value="0.0.0.1"/>
+  <property name="dist.jar"
+            value="${dist}/${app.name}-${app.version}.jar"/>
+
   <!-- dependencies; include system specific definitions in build.properties -->
   
-  <!-- This should be set to the path to scala home
+  <!-- This should be set to the path to scala home directory
   <property name="scala.dir"
             value=""/>
   -->
   
-  <!-- This should be set to the path to your servlet-api.jar
-  <property name="servlet-api.jar"
+  <!-- This should be set to the path to your jetty home directory
+  <property name="jetty.dir"
             value=""/>
   -->
 
@@ -34,10 +36,6 @@
   <property file="${basedir}/build.properties"/>
 
   <!-- external jar files -->
-  <property name="scala-compiler.jar"
-            value="${scala.dir}/lib/scala-compiler.jar"/>
-  <property name="scala-library.jar"
-            value="${scala.dir}/lib/scala-library.jar"/>
 
   <!-- compiler options -->
 
@@ -59,29 +57,29 @@
 
   <!-- classpaths -->
 
-  <!-- path for the core scala jars -->
+  <!-- path for the scala jars -->
   <path id="scala.classpath">
-    <pathelement location="${scala-compiler.jar}"/>
-    <pathelement location="${scala-library.jar}"/>
+    <fileset dir="${scala.dir}/lib"
+             includes="*.jar"/>
   </path>
 
-  <!-- path to the various classes needed for compilation -->
-  <path id="compile.classpath">
-    <fileset file="${servlet-api.jar}"/>
-    <fileset file="${jetty-server.jar}"/>
-    <fileset file="${jetty-servlet.jar}"/>
-    <fileset file="${jetty-util.jar}"/>
-    <fileset file="${jetty-security.jar}"/>
-    <fileset file="${jetty-http.jar}"/>
-    <fileset file="${jetty-io.jar}"/>
+  <!-- path to the various third party libraries needed -->
+  <path id="externals.classpath">
+    <fileset dir="${jetty.dir}/lib"
+             includes="*.jar"/>
+  </path>
+
+  <!-- path to the distro jar -->
+  <path id="distro.classpath">
+    <fileset dir="${dist}"
+             includes="*.jar"/>
   </path>
 
   <!-- targets -->
 
   <!-- import scala tasks -->
   <taskdef resource="scala/tools/ant/antlib.xml"
-           classpathref="scala.classpath">
-  </taskdef>
+           classpathref="scala.classpath"/>
 
   <target name="all"
           depends="clean,compile,dist"
@@ -114,9 +112,9 @@
             addparams="${compiler.addparams}"
             force="${compiler.force}"
             failonerror="true"
-            scalacdebugging="${compiler.showfilenames}"
+            scaladebugging="${compiler.showfilenames}"
             logging="${compiler.output}">
-      <classpath refid="compile.classpath"/>
+      <classpath refid="externals.classpath"/>
       <classpath refid="scala.classpath"/>
     </scalac>
   </target>
@@ -124,13 +122,26 @@
   <target name="dist"
           depends="prepare_dist"
           description="Create a distribution package">
-    <jar jarfile="${dist}/${app.name}-${app.version}.jar"
+    <jar jarfile="${dist.jar}"
          basedir="${build}">
       <manifest>
         <attribute name="Main-Class"
                    value="Trumpet"/>
       </manifest>
     </jar>
+  </target>
+
+  <target name="run"
+          depends="dist"
+          description="Run the standalone server">
+    <java classname="scala.tools.nsc.MainGenericRunner"
+          fork="true"
+          dir="${dist}">
+      <classpath refid="externals.classpath"/>
+      <classpath refid="scala.classpath"/>
+      <classpath refid="distro.classpath"/>
+      <arg line="-usejavacp Trumpet"/>
+    </java>
   </target>
 
 </project>
