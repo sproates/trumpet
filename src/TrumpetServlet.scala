@@ -6,10 +6,37 @@ import javax.servlet.http.{
 
 class TrumpetServlet extends HttpServlet {
 
-  override def doGet(request : Request, response : Response) = {
-    response.setContentType("text/xml")
-    response.getWriter().println(placeholder)
+  val storage = new Storage
+
+  override def doGet(request:Request, response:Response) = {
+    xmlHeader(response)
+    response.getWriter().println(respondToGet(storage.get(request.getPathInfo)))
   }
 
-  val placeholder = <response>Ok</response>
+  override def doPost(request:Request, response:Response) = {
+    xmlHeader(response)
+    response.getWriter().println(<error>Method not supported</error>);
+  }
+
+  override def doPut(request:Request, response:Response) = {
+    xmlHeader(response)
+    response.getWriter().println(<error>Method not supported</error>);
+  }
+
+  override def doDelete(request:Request, response:Response) = {
+    xmlHeader(response)
+    response.getWriter().println(<error>Method not supported</error>);
+  }
+
+  def xmlHeader(response:Response) = {
+    response.setContentType("text/xml")
+    response.getWriter().println("""<?xml version="1.0" encoding="UTF-8"?>""")
+  }
+
+  def respondToGet(data:Option[String]) = {
+    data match {
+      case None => <error>Not found</error>
+      case Some(value) => <ok>{value}</ok>
+    }
+  }
 }

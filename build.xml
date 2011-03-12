@@ -112,7 +112,6 @@
             addparams="${compiler.addparams}"
             force="${compiler.force}"
             failonerror="true"
-            scaladebugging="${compiler.showfilenames}"
             logging="${compiler.output}">
       <classpath refid="externals.classpath"/>
       <classpath refid="scala.classpath"/>
