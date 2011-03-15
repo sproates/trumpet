@@ -20,11 +20,6 @@ class TrumpetServlet extends HttpServlet with XML {
     response.getWriter.println(xml)
   }
 
-  def xmlHeader(response:Response) = {
-    response.setContentType("text/xml")
-    response.getWriter().println("""<?xml version="1.0" encoding="UTF-8"?>""")
-  }
-
   def doGetSuccess(key:String, data:String) =
     <response>
       <key>{key}</key>
