@@ -3,29 +3,25 @@ import javax.servlet.http.{
   HttpServlet, HttpServletRequest => Request,
   HttpServletResponse => Response
 }
+import scala.xml.{
+  Node,
+  Unparsed
+}
 
 class TrumpetServlet extends HttpServlet {
 
-  val storage = new Storage
+  lazy val storage:Storage = new DummyStorage
 
   override def doGet(request:Request, response:Response) = {
+    var key = getKeyName(request.getPathInfo)
+    var xml = {
+      storage.get(key) match {
+        case Some(d) => doGetSuccess(key, d)
+        case None => doGetFailure(key)
+      }
+    }
     xmlHeader(response)
-    response.getWriter().println(respondToGet(storage.get(request.getPathInfo)))
-  }
-
-  override def doPost(request:Request, response:Response) = {
-    xmlHeader(response)
-    response.getWriter().println(<error>Method not supported</error>);
-  }
-
-  override def doPut(request:Request, response:Response) = {
-    xmlHeader(response)
-    response.getWriter().println(<error>Method not supported</error>);
-  }
-
-  override def doDelete(request:Request, response:Response) = {
-    xmlHeader(response)
-    response.getWriter().println(<error>Method not supported</error>);
+    response.getWriter.println(xml)
   }
 
   def xmlHeader(response:Response) = {
@@ -33,10 +29,27 @@ class TrumpetServlet extends HttpServlet {
     response.getWriter().println("""<?xml version="1.0" encoding="UTF-8"?>""")
   }
 
-  def respondToGet(data:Option[String]) = {
-    data match {
-      case None => <error>Not found</error>
-      case Some(value) => <ok>{value}</ok>
+  def cdata(s:String):Node = Unparsed("<![CDATA[" + s + "]]>")
+
+  def doGetSuccess(key:String, data:String) =
+    <response>
+      <key>{key}</key>
+      <data>{cdata(data)}</data>
+    </response>
+
+  def doGetFailure(key:String) =
+    <response>
+      <key>{key}</key>
+      <error>
+        <message>key not found</message>
+      </error>
+    </response>
+
+  def getKeyName(s:String):String = {
+    var key = s.trim();
+    if(key.startsWith("/")) {
+      key = key.substring(1)
     }
+    key
   }
 }

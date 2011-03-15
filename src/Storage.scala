@@ -1,9 +1,10 @@
-class Storage {
+trait Storage {
+  def get(key:String):Option[String]
+/*
+  def add(key:String, data:String):Boolean
 
-  def get(key:String):Option[String] = {
-    key match {
-      case "/hello" => Some("Hello there!")
-      case _ => Some("Not found: " + key)
-    }
-  }
+  def update(key:String, data:String):Boolean
+
+  def delete(key:String):Boolean
+*/
 }

@@ -24,7 +24,7 @@ object Trumpet extends {
       case ex:IOException => println("Unable to load " + propsFile)
       case ex:NumberFormatException => println("port is not a number. Using " + default)
     }
-    parsedPort getOrElse default
+    parsedPort.getOrElse(default)
   }
 
   def main(args:Array[String]) = {
@@ -32,7 +32,7 @@ object Trumpet extends {
     var context = new ServletContextHandler(ServletContextHandler.SESSIONS)
     context.setContextPath("/")
     server.setHandler(context)
-    context.addServlet(new ServletHolder(new TrumpetServlet()), "/*")
+    context.addServlet(new ServletHolder(new TrumpetServlet), "/*")
     server.start
     server.join
   }
