@@ -3,12 +3,8 @@ import javax.servlet.http.{
   HttpServlet, HttpServletRequest => Request,
   HttpServletResponse => Response
 }
-import scala.xml.{
-  Node,
-  Unparsed
-}
 
-class TrumpetServlet extends HttpServlet {
+class TrumpetServlet extends HttpServlet with XML {
 
   lazy val storage:Storage = new DummyStorage
 
@@ -28,8 +24,6 @@ class TrumpetServlet extends HttpServlet {
     response.setContentType("text/xml")
     response.getWriter().println("""<?xml version="1.0" encoding="UTF-8"?>""")
   }
-
-  def cdata(s:String):Node = Unparsed("<![CDATA[" + s + "]]>")
 
   def doGetSuccess(key:String, data:String) =
     <response>
