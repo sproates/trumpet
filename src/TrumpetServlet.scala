@@ -6,7 +6,7 @@ import javax.servlet.http.{
 
 class TrumpetServlet extends HttpServlet with XML {
 
-  lazy val storage:Storage = new DummyStorage
+  lazy val storage:Storage = new FileStorage("c:\\temp")
 
   override def doGet(request:Request, response:Response) = {
     var key = getKeyName(request.getPathInfo)
