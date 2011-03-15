@@ -20,11 +20,18 @@ In this directory, run:
 
     ant
 
-This will create a jar in a directory called 'dist'.
+This will create a directory called 'dist'.
 
-Running
--------
+Running standalone
+------------------
+
+Edit appropriate values for your system into trumpet.properties.sample ans save as trumpet.properties in the same directory.
 
 In this directory, run:
 
     ant run
+
+Deploying in an app server
+--------------------------
+
+You will find a .war file in the dist directory which can be deployed directly.
