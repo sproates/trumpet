@@ -13,24 +13,27 @@ object Trumpet extends {
 
   val propsFile = "trumpet.properties"
 
-  def main(args:Array[String]) = {
-    var port = 8080
+  lazy val port = {
+    var default = 8080
+    var parsedPort:Option[Int] = None
     try {
       var props = new Properties
       props.load(new FileReader(propsFile))
-      var parsedPort = Integer.parseInt(props.getProperty("port"))
-      port = parsedPort
+      parsedPort = Some(Integer.parseInt(props.getProperty("port")))
     } catch {
       case ex:IOException => println("Unable to load " + propsFile)
-      case ex:NumberFormatException => println("port is not a number. Using " + port)
-      case ex => println("Unknown error: " + ex.getMessage)
+      case ex:NumberFormatException => println("port is not a number. Using " + default)
     }
+    parsedPort getOrElse default
+  }
+
+  def main(args:Array[String]) = {
     var server = new Server(port)
     var context = new ServletContextHandler(ServletContextHandler.SESSIONS)
     context.setContextPath("/")
     server.setHandler(context)
     context.addServlet(new ServletHolder(new TrumpetServlet()), "/*")
-    server.start()
-    server.join()
+    server.start
+    server.join
   }
 }
