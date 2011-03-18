@@ -4,17 +4,28 @@ Installation
 Dependencies
 ------------
 
+To build the servlet, you will need:
+
 * Java 1.6
 * Scala 2.8.1
-* Jetty 7.3.1
 * Ant 1.8.2
+* Servlet API jar
+
+To run the servlet, you will also need:
+
+* A servlet container such as Tomcat 1.7
+
+If you want to build the standalone app, you will also need:
+
+* Jetty 7.3.1
 
 Building
 --------
 
 Assuming you have all of the dependencies installed.
 
-Edit appropriate values for your system into build.properties.sample and save as build.properties in the same directory.
+Edit appropriate values for your system into build.properties.sample and save as
+build.properties in the same directory.
 
 In this directory, run:
 
@@ -22,16 +33,25 @@ In this directory, run:
 
 This will create a directory called 'dist'.
 
-Running standalone
-------------------
+Deploying in an app server
+--------------------------
 
-Edit appropriate values for your system into trumpet.properties.sample ans save as trumpet.properties in the same directory.
+You will find a .war file in the dist directory which can be deployed into your
+servlet container.
+
+Building the standalone app
+---------------------------
+
+Edit appropriate values for your system into trumpet.properties.sample and save
+as trumpet.properties in the same directory.
+
+In this directory, run:
+
+    ant standalone
+
+Running the standalone app
+--------------------------
 
 In this directory, run:
 
     ant run
-
-Deploying in an app server
---------------------------
-
-You will find a .war file in the dist directory which can be deployed directly.

@@ -7,6 +7,10 @@
 
   <property name="src.dir"
             value="${basedir}/src"/>
+  <property name="src.servlet.dir"
+            value="${src.dir}/servlet"/>
+  <property name="src.standalone.dir"
+            value="${src.dir}/standalone"/>
   <property name="build.dir"
             value="${basedir}/build"/>
   <property name="build.classes.dir"
@@ -17,8 +21,6 @@
             value="${build.servlet.dir}/WEB-INF"/>
   <property name="build.servlet.webinf.classes.dir"
             value="${build.servlet.webinf.dir}/classes"/>
-  <property name="build.standalone.dir"
-            value="${build.dir}/standalone"/>
   <property name="dist.dir"
             value="${basedir}/dist"/>
   <property name="webinf.dir"
@@ -33,18 +35,6 @@
             value="${dist.dir}/${app.name}-${app.version}-standalone.jar"/>
   <property name="dist.servlet.war"
             value="${dist.dir}/${app.name}-${app.version}-servlet.war"/>
-
-  <!-- dependencies; include system specific definitions in build.properties -->
-  
-  <!-- This should be set to the path to scala home directory
-  <property name="scala.dir"
-            value=""/>
-  -->
-  
-  <!-- This should be set to the path to your jetty home directory
-  <property name="jetty.dir"
-            value=""/>
-  -->
 
   <!-- include system specific definitions -->
   <property file="${basedir}/build.properties"/>
@@ -71,16 +61,26 @@
 
   <!-- classpaths -->
 
-  <!-- path for the scala jars -->
+  <!-- scala -->
   <path id="scala.classpath">
     <fileset dir="${scala.dir}/lib"
              includes="*.jar"/>
   </path>
 
-  <!-- path to the various third party libraries needed -->
-  <path id="externals.classpath">
+  <!-- servlet API -->
+  <path id="servlet.classpath">
+    <fileset file="${servlet-api.jar}"/>
+  </path>
+
+  <!-- jetty -->
+  <path id="jetty.classpath">
     <fileset dir="${jetty.dir}/lib"
              includes="*.jar"/>
+  </path>
+
+  <!-- path to the built classes -->
+  <path id="build.classes.classpath">
+    <pathelement path="${build.classes.dir}"/>
   </path>
 
   <!-- path to the distro jar -->
@@ -96,8 +96,8 @@
            classpathref="scala.classpath"/>
 
   <target name="all"
-          depends="clean,compile,dist"
-          description="Make everything from scratch"/>
+          depends="clean,servlet"
+          description="Make the servlet from scratch"/>
 
   <target name="clean"
           description="Clean up all build artifacts">
@@ -116,7 +116,6 @@
       <fileset dir="${webinf.dir}"/>
     </copy>
     <mkdir dir="${build.servlet.webinf.classes.dir}"/>
-    <mkdir dir="${build.standalone.dir}"/>
   </target>
 
   <target name="prepare_dist"
@@ -125,31 +124,42 @@
     <mkdir dir="${dist.dir}"/>
   </target>
 
-  <target name="compile"
+  <target name="compile_servlet"
           depends="prepare_build"
-          description="Compile sources">
-    <scalac srcdir="${src.dir}"
+          description="Compile servlet sources">
+    <scalac srcdir="${src.servlet.dir}"
             destdir="${build.classes.dir}"
             deprecation="${compiler.deprecation}"
             addparams="${compiler.addparams}"
             force="${compiler.force}"
             failonerror="true"
             logging="${compiler.output}">
-      <classpath refid="externals.classpath"/>
       <classpath refid="scala.classpath"/>
+      <classpath refid="servlet.classpath"/>
     </scalac>
   </target>
 
-  <target name="dist"
-          depends="prepare_dist"
-          description="Create the distribution packages">
-    <jar jarfile="${dist.standalone.jar}"
-         basedir="${build.classes.dir}">
-      <manifest>
-        <attribute name="Main-Class"
-                   value="Trumpet"/>
-      </manifest>
-    </jar>
+  <target name="compile_standalone"
+          depends="compile_servlet"
+          description="Compile standalone sources">
+    <echo message="${build.classes.dir}"/>
+    <scalac srcdir="${src.standalone.dir}"
+            destdir="${build.classes.dir}"
+            deprecation="${compiler.deprecation}"
+            addparams="${compiler.addparams}"
+            force="${compiler.force}"
+            failonerror="true"
+            logging="${compiler.output}">
+      <classpath refid="jetty.classpath"/>
+      <classpath refid="scala.classpath"/>
+      <classpath refid="servlet.classpath"/>
+      <classpath refid="build.classes.classpath"/>
+    </scalac>
+  </target>
+
+  <target name="servlet"
+          depends="compile_servlet,prepare_dist"
+          description="Create the servlet distribution package">
     <copy todir="${build.servlet.webinf.classes.dir}">
       <fileset dir="${build.classes.dir}"/>
     </copy>
@@ -157,13 +167,24 @@
          basedir="${build.servlet.dir}"/>
   </target>
 
+  <target name="standalone"
+          depends="compile_standalone,prepare_dist">
+    <jar jarfile="${dist.standalone.jar}"
+         basedir="${build.classes.dir}">
+      <manifest>
+        <attribute name="Main-Class"
+                   value="Trumpet"/>
+      </manifest>
+    </jar>
+  </target>
+
   <target name="run"
-          depends="dist"
+          depends="standalone"
           description="Run the standalone server">
     <java classname="scala.tools.nsc.MainGenericRunner"
           fork="true"
           dir="${basedir}">
-      <classpath refid="externals.classpath"/>
+      <classpath refid="jetty.classpath"/>
       <classpath refid="scala.classpath"/>
       <classpath refid="distro.classpath"/>
       <arg line="-usejavacp Trumpet"/>
