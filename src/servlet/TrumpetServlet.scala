@@ -1,4 +1,5 @@
 import java.io.PrintWriter
+import javax.servlet.ServletConfig
 import javax.servlet.http.{
   HttpServlet, HttpServletRequest => Request,
   HttpServletResponse => Response
@@ -6,18 +7,49 @@ import javax.servlet.http.{
 
 class TrumpetServlet extends HttpServlet with XML {
 
-  lazy val storage:Storage = new FileStorage("c:\\temp")
+  var storage:Option[Storage] = None;
+
+  override def init(config:ServletConfig) = {
+    super.init(config)
+    println("init")
+    var storageType = config.getInitParameter("storage_type")
+    var storageLocation = config.getInitParameter("storage_location")
+    storage = storageType match {
+      case "file" => Some(new FileStorage(storageLocation))
+      case "dummy" => Some(new DummyStorage)
+      case _ => None
+    }
+    storage match {
+      case Some(s) => println("storage is set up")
+      case None => println("no storage set up")
+    }
+    println("storage_type = " + storageType)
+    println("storage_location = " + storageLocation)
+  }
+
+  def displayError(error:String, response:Response) = {
+    xmlHeader(response)
+    response.getWriter.println(errorXML(error))
+  }
+
+  def errorXML(error:String) =
+    <error>
+      <message>{error}</message>
+    </error>
 
   override def doGet(request:Request, response:Response) = {
-    var key = getKeyName(request.getPathInfo)
-    var xml = {
-      storage.get(key) match {
-        case Some(d) => doGetSuccess(key, d)
-        case None => doGetFailure(key)
+    storage match {
+      case Some(s) => {
+        var key = getKeyName(request.getPathInfo)
+        var xml = s.get(key) match {
+          case Some(d) => doGetSuccess(key, d)
+          case None => doGetFailure(key)
+        }
+        xmlHeader(response)
+        response.getWriter.println(xml)
       }
+      case None => displayError("storage is incorrectly configured", response)
     }
-    xmlHeader(response)
-    response.getWriter.println(xml)
   }
 
   def doGetSuccess(key:String, data:String) =

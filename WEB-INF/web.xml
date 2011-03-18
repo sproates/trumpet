@@ -12,6 +12,14 @@
   <servlet>
     <servlet-name>trumpet</servlet-name>
     <servlet-class>TrumpetServlet</servlet-class>
+    <init-param>
+      <param-name>storage_type</param-name>
+      <param-value>file</param-value>
+    </init-param>
+    <init-param>
+      <param-name>storage_location</param-name>
+      <param-value>c:/tmp/storage</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>
