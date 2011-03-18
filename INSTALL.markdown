@@ -24,6 +24,9 @@ Building
 
 Assuming you have all of the dependencies installed.
 
+The build system reads a file called build.properties, located in the base
+directory, from which it determines the location of various jars etc.
+
 Edit appropriate values for your system into build.properties.sample and save as
 build.properties in the same directory.
 
@@ -42,15 +45,18 @@ servlet container.
 Building the standalone app
 ---------------------------
 
-Edit appropriate values for your system into trumpet.properties.sample and save
-as trumpet.properties in the same directory.
-
 In this directory, run:
 
     ant standalone
 
 Running the standalone app
 --------------------------
+
+The standalone app reads its configuration from a file called trumpet.properties
+in the base directory.
+
+Edit appropriate values for your system into trumpet.properties.sample and save
+as trumpet.properties in the same directory.
 
 In this directory, run:
 
