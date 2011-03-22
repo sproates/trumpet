@@ -24,7 +24,7 @@
   <property name="dist.dir"
             value="${basedir}/dist"/>
   <property name="webinf.dir"
-            value="${basedir}/WEB-INF"/>
+            value="${src.servlet.dir}/WEB-INF"/>
 
   <!-- application properties -->
   <property name="app.name"
