@@ -71,7 +71,7 @@
 
   <!-- scala -->
   <path id="scala.classpath">
-    <fileset dir="${scala.dir}/lib"
+    <fileset dir="${scala.lib.dir}"
              includes="*.jar"/>
   </path>
 
@@ -82,7 +82,7 @@
 
   <!-- jetty -->
   <path id="jetty.classpath">
-    <fileset dir="${jetty.dir}/lib"
+    <fileset dir="${jetty.lib.dir}"
              includes="*.jar"/>
   </path>
 
@@ -228,6 +228,7 @@
           dir="${basedir}">
       <classpath refid="jetty.classpath"/>
       <classpath refid="scala.classpath"/>
+      <classpath refid="servlet.classpath"/>
       <classpath refid="distro.classpath"/>
       <arg line="-usejavacp Trumpet"/>
     </java>

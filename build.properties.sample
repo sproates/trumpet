@@ -1,5 +1,5 @@
-scala.dir=/path/to/scala
-servlet-api.jar=/path/to/servlet-api.jar
-jetty.dir=/path/to/jetty
-junit.jar=/path/to/junit.jar
-scalatest.jar=/path/to/scalatest.jar
+scala.lib.dir=./deps/scala
+servlet-api.jar=./deps/servlet/servlet-api-2.5.jar
+jetty.lib.dir=./deps/jetty
+junit.jar=./deps/junit/junit-4.8.2.jar
+scalatest.jar=./deps/scalatest/scalatest-1.3.jar
