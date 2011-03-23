@@ -1,3 +1,5 @@
-scala.dir=
-servlet-api.jar=
-jetty.dir=
+scala.dir=/path/to/scala
+servlet-api.jar=/path/to/servlet-api.jar
+jetty.dir=/path/to/jetty
+junit.jar=/path/to/junit.jar
+scalatest.jar=/path/to/scalatest.jar

@@ -78,6 +78,16 @@
              includes="*.jar"/>
   </path>
 
+  <!-- junit -->
+  <path="junit.classpath">
+    <fileset file="${junit.jar}"/>
+  </path>
+
+  <!-- scalatest -->
+  <path="scalatest.classpath">
+    <fileset file="${scalatest.jar}"/>
+  </path>
+
   <!-- path to the built classes -->
   <path id="build.classes.classpath">
     <pathelement path="${build.classes.dir}"/>
