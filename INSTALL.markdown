@@ -19,6 +19,11 @@ If you want to build the standalone app, you will also need:
 
 * Jetty 7.3.1
 
+To run the unit tests you will also need:
+
+* JUnit 4.8.2
+* ScalaTest 1.3
+
 Building
 --------
 
@@ -61,3 +66,13 @@ as trumpet.properties in the same directory.
 In this directory, run:
 
     ant run
+
+Testing
+-------
+
+Edit appropriate values for your system into build.properties.sample and save as
+build.properties in the same directory.
+
+In this directory, run:
+
+    ant run_unit_tests
