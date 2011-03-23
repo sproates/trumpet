@@ -21,10 +21,18 @@
             value="${build.servlet.dir}/WEB-INF"/>
   <property name="build.servlet.webinf.classes.dir"
             value="${build.servlet.webinf.dir}/classes"/>
+  <property name="build.tests.dir"
+            value="${build.dir}/tests"/>
+  <property name="build.tests.unit.dir"
+            value="${build.tests.dir}/unit"/>
   <property name="dist.dir"
             value="${basedir}/dist"/>
   <property name="webinf.dir"
             value="${src.servlet.dir}/WEB-INF"/>
+  <property name="tests.dir"
+            value="${basedir}/tests"/>
+  <property name="tests.unit.dir"
+            value="${tests.dir}/unit"/>
 
   <!-- application properties -->
   <property name="app.name"
@@ -126,6 +134,8 @@
       <fileset dir="${webinf.dir}"/>
     </copy>
     <mkdir dir="${build.servlet.webinf.classes.dir}"/>
+    <mkdir dir="${build.tests.dir}"/>
+    <mkdir dir="${build.tests.unit.dir"/>
   </target>
 
   <target name="prepare_dist"
@@ -152,7 +162,6 @@
   <target name="compile_standalone"
           depends="compile_servlet"
           description="Compile standalone sources">
-    <echo message="${build.classes.dir}"/>
     <scalac srcdir="${src.standalone.dir}"
             destdir="${build.classes.dir}"
             deprecation="${compiler.deprecation}"
@@ -164,6 +173,23 @@
       <classpath refid="scala.classpath"/>
       <classpath refid="servlet.classpath"/>
       <classpath refid="build.classes.classpath"/>
+    </scalac>
+  </target>
+
+  <target name="compile_unit_tests"
+          depends="compile_servlet"
+          description="Compile unit tests">
+    <scalac srcdir="${tests.unit.dir}"
+            destdir="${build.tests.unit.dir"
+            deprecation="${compiler.deprecation}"
+            addparams="${compiler.addparams}"
+            force="${compiler.force}"
+            failonerror="true"
+            logging="${compiler.output}">
+      <classpath refid="build.classes.classpath"/>
+      <classpath refid="scala.classpath"/>
+      <classpath refid="junit.classpath"/>
+      <classpath refid="scalatest.classpath"/>
     </scalac>
   </target>
 
