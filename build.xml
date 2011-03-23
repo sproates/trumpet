@@ -87,24 +87,29 @@
   </path>
 
   <!-- junit -->
-  <path="junit.classpath">
+  <path id="junit.classpath">
     <fileset file="${junit.jar}"/>
   </path>
 
   <!-- scalatest -->
-  <path="scalatest.classpath">
+  <path id="scalatest.classpath">
     <fileset file="${scalatest.jar}"/>
   </path>
 
   <!-- path to the built classes -->
   <path id="build.classes.classpath">
-    <pathelement path="${build.classes.dir}"/>
+    <pathelement location="${build.classes.dir}"/>
   </path>
 
   <!-- path to the distro jar -->
   <path id="distro.classpath">
     <fileset dir="${dist.dir}"
              includes="*.jar"/>
+  </path>
+
+  <!-- path to the unit test classes -->
+  <path id="build.tests.unit.classpath">
+    <pathelement location="${build.tests.unit.dir}"/>
   </path>
 
   <!-- targets -->
@@ -135,7 +140,7 @@
     </copy>
     <mkdir dir="${build.servlet.webinf.classes.dir}"/>
     <mkdir dir="${build.tests.dir}"/>
-    <mkdir dir="${build.tests.unit.dir"/>
+    <mkdir dir="${build.tests.unit.dir}"/>
   </target>
 
   <target name="prepare_dist"
@@ -180,7 +185,7 @@
           depends="compile_servlet"
           description="Compile unit tests">
     <scalac srcdir="${tests.unit.dir}"
-            destdir="${build.tests.unit.dir"
+            destdir="${build.tests.unit.dir}"
             deprecation="${compiler.deprecation}"
             addparams="${compiler.addparams}"
             force="${compiler.force}"
@@ -188,6 +193,7 @@
             logging="${compiler.output}">
       <classpath refid="build.classes.classpath"/>
       <classpath refid="scala.classpath"/>
+      <classpath refid="servlet.classpath"/>
       <classpath refid="junit.classpath"/>
       <classpath refid="scalatest.classpath"/>
     </scalac>
@@ -224,6 +230,22 @@
       <classpath refid="scala.classpath"/>
       <classpath refid="distro.classpath"/>
       <arg line="-usejavacp Trumpet"/>
+    </java>
+  </target>
+
+  <target name="run_unit_tests"
+          depends="compile_unit_tests"
+          description="Run the unit tests">
+    <java classname="scala.tools.nsc.MainGenericRunner"
+          fork="true"
+          dir="${basedir}">
+      <classpath refid="build.tests.unit.classpath"/>
+      <classpath refid="build.classes.classpath"/>
+      <classpath refid="scala.classpath"/>
+      <classpath refid="servlet.classpath"/>
+      <classpath refid="junit.classpath"/>
+      <classpath refid="scalatest.classpath"/>
+      <arg line="-usejavacp org.junit.runner.JUnitCore TrumpetServletTests"/>
     </java>
   </target>
 
