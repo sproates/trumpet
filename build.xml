@@ -25,6 +25,8 @@
             value="${build.dir}/tests"/>
   <property name="build.tests.unit.dir"
             value="${build.tests.dir}/unit"/>
+  <property name="build.tests.functional.dir"
+            value="${build.tests.dir}/functional"/>
   <property name="dist.dir"
             value="${basedir}/dist"/>
   <property name="webinf.dir"
@@ -33,6 +35,8 @@
             value="${basedir}/tests"/>
   <property name="tests.unit.dir"
             value="${tests.dir}/unit"/>
+  <property name="tests.functional.dir"
+            value="${tests.dir}/functional"/>
 
   <!-- application properties -->
   <property name="app.name"
@@ -96,6 +100,17 @@
     <fileset file="${scalatest.jar}"/>
   </path>
 
+  <!-- mockrunner -->
+  <path id="mockrunner.classpath">
+    <fileset dir="${mockrunner.lib.dir}"
+             includes="*.jar"/>
+  </path>
+
+  <!-- jdom -->
+  <path id="jdom.classpath">
+    <fileset file="${jdom.jar}"/>
+  </path>
+
   <!-- path to the built classes -->
   <path id="build.classes.classpath">
     <pathelement location="${build.classes.dir}"/>
@@ -110,6 +125,11 @@
   <!-- path to the unit test classes -->
   <path id="build.tests.unit.classpath">
     <pathelement location="${build.tests.unit.dir}"/>
+  </path>
+
+  <!-- path to the functional test classes -->
+  <path id="build.tests.functional.classpath">
+    <pathelement location="${build.tests.functional.dir}"/>
   </path>
 
   <!-- targets -->
@@ -141,6 +161,7 @@
     <mkdir dir="${build.servlet.webinf.classes.dir}"/>
     <mkdir dir="${build.tests.dir}"/>
     <mkdir dir="${build.tests.unit.dir}"/>
+    <mkdir dir="${build.tests.functional.dir}"/>
   </target>
 
   <target name="prepare_dist"
@@ -199,6 +220,26 @@
     </scalac>
   </target>
 
+  <target name="compile_functional_tests"
+          depends="compile_servlet"
+          description="Compile functional tests">
+    <scalac srcdir="${tests.functional.dir}"
+            destdir="${build.tests.functional.dir}"
+            deprecation="${compiler.deprecation}"
+            addparams="${compiler.addparams}"
+            force="${compiler.force}"
+            failonerror="true"
+            logging="${compiler.output}">
+      <classpath refid="build.classes.classpath"/>
+      <classpath refid="scala.classpath"/>
+      <classpath refid="servlet.classpath"/>
+      <classpath refid="junit.classpath"/>
+      <classpath refid="scalatest.classpath"/>
+      <classpath refid="mockrunner.classpath"/>
+      <classpath refid="jdom.classpath"/>
+    </scalac>
+  </target>
+
   <target name="servlet"
           depends="compile_servlet,prepare_dist"
           description="Create the servlet distribution package">
@@ -247,6 +288,24 @@
       <classpath refid="junit.classpath"/>
       <classpath refid="scalatest.classpath"/>
       <arg line="-usejavacp org.junit.runner.JUnitCore TrumpetServletTests"/>
+    </java>
+  </target>
+
+  <target name="run_functional_tests"
+          depends="compile_functional_tests"
+          description="Run the functional tests">
+    <java classname="scala.tools.nsc.MainGenericRunner"
+          fork="true"
+          dir="${basedir}">
+      <classpath refid="build.tests.functional.classpath"/>
+      <classpath refid="build.classes.classpath"/>
+      <classpath refid="scala.classpath"/>
+      <classpath refid="servlet.classpath"/>
+      <classpath refid="junit.classpath"/>
+      <classpath refid="scalatest.classpath"/>
+      <classpath refid="mockrunner.classpath"/>
+      <classpath refid="jdom.classpath"/>
+      <arg line="-usejavacp org.junit.runner.JUnitCore TrumpetServletFunctionalTests"/>
     </java>
   </target>
 

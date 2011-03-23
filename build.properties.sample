@@ -3,3 +3,4 @@ servlet-api.jar=./deps/servlet/servlet-api-2.5.jar
 jetty.lib.dir=./deps/jetty
 junit.jar=./deps/junit/junit-4.8.2.jar
 scalatest.jar=./deps/scalatest/scalatest-1.3.jar
+jdom.jar=./deps/jdom/jdom.jar
