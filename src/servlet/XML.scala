@@ -3,11 +3,17 @@ import javax.servlet.http.{
 }
 import scala.xml.{
   Node,
+  Text,
   Unparsed
 }
 
 trait XML {
-  def cdata(s:String):Node = Unparsed("<![CDATA[" + s + "]]>")
+  def cdata(s:String):Node = {
+    s match {
+      case null => Unparsed("<![CDATA[]]>")
+      case _ => Unparsed("<![CDATA[" + s + "]]>")
+    }
+  }
 
   def xmlHeader(response:Response) = {
     response.setContentType("text/xml")
