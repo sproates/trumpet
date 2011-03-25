@@ -216,6 +216,7 @@
       <classpath refid="scala.classpath"/>
       <classpath refid="servlet.classpath"/>
       <classpath refid="junit.classpath"/>
+      <classpath refid="mockrunner.classpath"/>
       <classpath refid="scalatest.classpath"/>
     </scalac>
   </target>
@@ -297,6 +298,7 @@
       <classpath refid="scala.classpath"/>
       <classpath refid="servlet.classpath"/>
       <classpath refid="junit.classpath"/>
+      <classpath refid="mockrunner.classpath"/>
       <classpath refid="scalatest.classpath"/>
       <arg line="-usejavacp org.junit.runner.JUnitCore XMLTests"/>
     </java>
