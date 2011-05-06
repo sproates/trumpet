@@ -1,1 +1,1 @@
-port=8081storage=filestorage_location=c:/tmp/storage
+port=8081storage_type=filestorage_location=c:/tmp/storage

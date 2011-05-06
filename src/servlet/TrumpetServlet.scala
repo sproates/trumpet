@@ -4,32 +4,47 @@ import javax.servlet.http.{
   HttpServlet, HttpServletRequest => Request,
   HttpServletResponse => Response
 }
+import scala.xml.Elem
 
 class TrumpetServlet extends HttpServlet with XML {
 
-  var storage:Option[Storage] = None;
+  var config:ServletConfig = null;
 
-  override def init(config:ServletConfig) = {
+  override def init(_config:ServletConfig) = {
     super.init(config)
-    println("init")
-    var storageType = config.getInitParameter("storage_type")
-    var storageLocation = config.getInitParameter("storage_location")
-    storage = storageType match {
-      case "file" => Some(new FileStorage(storageLocation))
-      case "dummy" => Some(new DummyStorage)
-      case _ => None
-    }
-    storage match {
-      case Some(s) => println("storage is set up")
-      case None => println("no storage set up")
-    }
-    println("storage_type = " + storageType)
-    println("storage_location = " + storageLocation)
+    this.config = _config
   }
 
-  def displayError(error:String, response:Response) = {
+  lazy val storage:Option[Storage] = {
+    config match {
+      case c:ServletConfig => {
+        config.getInitParameter("storage_type") match {
+          case "file" => Some(new FileStorage(config.getInitParameter("storage_location")))
+          case "dummy" => Some(new DummyStorage)
+          case _ => None
+        }
+      }
+      case _ => None
+    }
+  }
+
+  def displayMessage(message:Elem, response:Response) = {
     xmlHeader(response)
-    response.getWriter.println(errorXML(error))
+    response.getWriter.println(message)
+  }
+
+  override def doGet(request:Request, response:Response) = {
+    storage match {
+      case Some(s) => displayMessage(getFromStorage(s, request.getPathInfo), response)
+      case None => displayMessage(errorXML("storage is incorrectly configured"), response)
+    }
+  }
+
+  private def getFromStorage(s:Storage, key:String) = {
+    s.get(getKeyName(key)) match {
+      case Some(d) => doGetSuccess(d)
+      case None => errorXML("key not found")
+    }
   }
 
   def errorXML(error:String) =
@@ -37,40 +52,15 @@ class TrumpetServlet extends HttpServlet with XML {
       <message>{error}</message>
     </error>
 
-  override def doGet(request:Request, response:Response) = {
-    storage match {
-      case Some(s) => {
-        var key = getKeyName(request.getPathInfo)
-        var xml = s.get(key) match {
-          case Some(d) => doGetSuccess(key, d)
-          case None => doGetFailure(key)
-        }
-        xmlHeader(response)
-        response.getWriter.println(xml)
-      }
-      case None => displayError("storage is incorrectly configured", response)
-    }
-  }
-
-  def doGetSuccess(key:String, data:String) =
+  def doGetSuccess(data:String) =
     <response>
-      <key>{key}</key>
       <data>{cdata(data)}</data>
     </response>
 
-  def doGetFailure(key:String) =
-    <response>
-      <key>{key}</key>
-      <error>
-        <message>key not found</message>
-      </error>
-    </response>
-
-  def getKeyName(s:String):String = {
-    var key = s.trim();
-    if(key.startsWith("/")) {
-      key = key.substring(1)
+  def getKeyName(s:String) = {
+    s.trim match {
+      case x:String if x.startsWith("/") => x.substring(1)
+      case _ => s
     }
-    key
   }
 }
